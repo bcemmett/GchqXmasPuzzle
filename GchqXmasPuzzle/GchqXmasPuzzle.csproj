@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CellState.cs" />
+    <Compile Include="GridData.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>

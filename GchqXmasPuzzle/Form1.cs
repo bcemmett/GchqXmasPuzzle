@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Windows.Forms;
 
 namespace GchqXmasPuzzle
@@ -14,10 +13,12 @@ namespace GchqXmasPuzzle
 
         private void button_Go_Click(object sender, EventArgs e)
         {
-            int gridSize = 25;
+            var gridData = new GridData();
+            var gridSize = gridData.GetGridSize();
+            var rowConstraints = gridData.GetRowConstraints();
+            var columnConstraints = gridData.GetColumnConstraints();
 
-            List<int[]> arrangements = CalculatePossibleArrangements(new int[] { 7,3,1,1,7 }, gridSize);
-
+            //Initialise the grid
             CellState[][] grid = new CellState[gridSize][];
             for (int i = 0; i < gridSize; i++)
             {
