@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace GchqXmasPuzzle
@@ -28,6 +29,24 @@ namespace GchqXmasPuzzle
             {
                 grid[i] = new CellState[gridSize];
             }
+
+            for (int i = 0; i < gridSize; i++)
+            {
+                for (int j = 0; j < gridSize; j++)
+                {
+                    bool black = rowOptions[i].Any(x => x[j] == CellState.Black);
+                    if (!black)
+                    {
+                        grid[i][j] = CellState.White;
+                    }
+                    bool white = rowOptions[i].Any(x => x[j] == CellState.White);
+                    if (!white)
+                    {
+                        grid[i][j] = CellState.Black;
+                    }
+                }
+            }
+
             PrintGrid(grid);
         }
 
