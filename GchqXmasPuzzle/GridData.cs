@@ -1,4 +1,6 @@
-﻿namespace GchqXmasPuzzle
+﻿using System.Collections.Generic;
+
+namespace GchqXmasPuzzle
 {
     class GridData
     {
@@ -67,6 +69,34 @@
             constraints[23] = new int[] {1,1,2,2,2,6,1};
             constraints[24] = new int[] {7,1,3,2,1,1};
             return constraints;
+        }
+
+        public List<int[]> GetBlackCells()
+        {
+            var cells = new List<int[]>();
+            cells.Add(new[] {3, 3});
+            cells.Add(new[] {3, 4});
+            cells.Add(new[] {3, 12});
+            cells.Add(new[] {3, 13});
+            cells.Add(new[] {3, 21});
+            cells.Add(new[] {8, 6});
+            cells.Add(new[] {8, 7});
+            cells.Add(new[] {8, 10});
+            cells.Add(new[] {8, 14});
+            cells.Add(new[] {8, 15});
+            cells.Add(new[] {8, 18});
+            cells.Add(new[] {16, 6});
+            cells.Add(new[] {16, 11});
+            cells.Add(new[] {16, 16});
+            cells.Add(new[] {16, 20});
+            cells.Add(new[] {21, 3});
+            cells.Add(new[] {21, 4});
+            cells.Add(new[] {21, 9});
+            cells.Add(new[] {21, 10});
+            cells.Add(new[] {21, 15});
+            cells.Add(new[] {21, 20});
+            cells.Add(new[] {21, 21});
+            return cells;
         }
     }
 }

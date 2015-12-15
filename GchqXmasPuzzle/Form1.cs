@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Emit;
 using System.Windows.Forms;
 
 namespace GchqXmasPuzzle
@@ -17,6 +16,7 @@ namespace GchqXmasPuzzle
         {
             var gridData = new GridData();
             var gridSize = gridData.GetGridSize();
+            var blackCells = gridData.GetBlackCells();
 
             var rowConstraints = gridData.GetRowConstraints();
             List<CellState[]>[] rowOptions = CalculateLineOptions(rowConstraints, gridSize);
@@ -30,8 +30,12 @@ namespace GchqXmasPuzzle
             {
                 grid[i] = new CellState[gridSize];
             }
+            foreach (var blackCell in blackCells)
+            {
+                grid[blackCell[0]][blackCell[1]] = CellState.Black;
+            }
 
-            for (int z = 0; z < 20; z ++)
+            for (int z = 0; z < 10; z ++)
             {
                 //First strip out any options which are not compatible with the grid
             
