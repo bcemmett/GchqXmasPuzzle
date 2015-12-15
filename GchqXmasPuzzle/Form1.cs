@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Windows.Forms;
 
 namespace GchqXmasPuzzle
@@ -30,30 +31,51 @@ namespace GchqXmasPuzzle
                 grid[i] = new CellState[gridSize];
             }
 
-            for (int i = 0; i < gridSize; i++)
+            for (int z = 0; z < 20; z ++)
             {
-                for (int j = 0; j < gridSize; j++)
+                //First strip out any options which are not compatible with the grid
+            
+                for (int i = 0; i < gridSize; i++)
                 {
-                    bool blackRow = rowOptions[i].Any(x => x[j] == CellState.Black);
-                    if (!blackRow)
+                    for (int j = 0; j < gridSize; j++)
                     {
-                        grid[i][j] = CellState.White;
+                        if (grid[i][j] != CellState.Unknown)
+                        {
+                            rowOptions[i] = rowOptions[i].Where(option => grid[i][j] == option[j]).ToList();
+                        }
+                        if (grid[j][i] != CellState.Unknown)
+                        {
+                            columnOptions[i] = columnOptions[i].Where(option => grid[j][i] == option[j]).ToList();
+                        }
                     }
-                    bool whiteRow = rowOptions[i].Any(x => x[j] == CellState.White);
-                    if (!whiteRow)
-                    {
-                        grid[i][j] = CellState.Black;
-                    }
+                }
 
-                    bool blackColumn = columnOptions[i].Any(x => x[j] == CellState.Black);
-                    if (!blackColumn)
+                //Then look for cells which can only have one value
+                for (int i = 0; i < gridSize; i++)
+                {
+                    for (int j = 0; j < gridSize; j++)
                     {
-                        grid[j][i] = CellState.White;
-                    }
-                    bool whiteColumn = columnOptions[i].Any(x => x[j] == CellState.White);
-                    if (!whiteColumn)
-                    {
-                        grid[j][i] = CellState.Black;
+                        bool blackRow = rowOptions[i].Any(x => x[j] == CellState.Black);
+                        if (!blackRow)
+                        {
+                            grid[i][j] = CellState.White;
+                        }
+                        bool whiteRow = rowOptions[i].Any(x => x[j] == CellState.White);
+                        if (!whiteRow)
+                        {
+                            grid[i][j] = CellState.Black;
+                        }
+
+                        bool blackColumn = columnOptions[i].Any(x => x[j] == CellState.Black);
+                        if (!blackColumn)
+                        {
+                            grid[j][i] = CellState.White;
+                        }
+                        bool whiteColumn = columnOptions[i].Any(x => x[j] == CellState.White);
+                        if (!whiteColumn)
+                        {
+                            grid[j][i] = CellState.Black;
+                        }
                     }
                 }
             }
