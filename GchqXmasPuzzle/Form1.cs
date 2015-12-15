@@ -15,8 +15,12 @@ namespace GchqXmasPuzzle
         {
             var gridData = new GridData();
             var gridSize = gridData.GetGridSize();
+
             var rowConstraints = gridData.GetRowConstraints();
+            List<CellState[]>[] rowOptions = CalculateLineOptions(rowConstraints, gridSize);
+
             var columnConstraints = gridData.GetColumnConstraints();
+            List<CellState[]>[] columnOptions = CalculateLineOptions(columnConstraints, gridSize);
 
             //Initialise the grid
             CellState[][] grid = new CellState[gridSize][];
@@ -25,6 +29,36 @@ namespace GchqXmasPuzzle
                 grid[i] = new CellState[gridSize];
             }
             PrintGrid(grid);
+        }
+
+        private List<CellState[]>[] CalculateLineOptions(int[][] lineConstraints, int gridSize)
+        {
+            List<CellState[]>[] lineOptions = new List<CellState[]>[gridSize];
+            for (int i = 0; i < gridSize; i++) //for each of the lines
+            {
+                lineOptions[i] = new List<CellState[]>();
+                List<int[]> runStartingPositionSets = CalculatePossibleArrangements(lineConstraints[i], gridSize);
+                foreach (var runStartingPositionSet in runStartingPositionSets) //for every option for that line
+                {
+                    CellState[] lineOption = new CellState[gridSize];
+                    for (int run = 0; run < runStartingPositionSet.Length; run++) //for every run in the option
+                    {
+                        for (int position = runStartingPositionSet[run]; position < runStartingPositionSet[run] + lineConstraints[i][run]; position++)
+                        {
+                            lineOption[position] = CellState.Black;
+                        }
+                        for (int position = 0; position < gridSize; position++)
+                        {
+                            if (lineOption[position] != CellState.Black)
+                            {
+                                lineOption[position] = CellState.White;
+                            }
+                        }
+                    }
+                    lineOptions[i].Add(lineOption);
+                }
+            }
+            return lineOptions;
         }
 
         private List<int[]> CalculatePossibleArrangements(int[] constraint, int gridSize)
