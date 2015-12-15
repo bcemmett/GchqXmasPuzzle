@@ -34,15 +34,26 @@ namespace GchqXmasPuzzle
             {
                 for (int j = 0; j < gridSize; j++)
                 {
-                    bool black = rowOptions[i].Any(x => x[j] == CellState.Black);
-                    if (!black)
+                    bool blackRow = rowOptions[i].Any(x => x[j] == CellState.Black);
+                    if (!blackRow)
                     {
                         grid[i][j] = CellState.White;
                     }
-                    bool white = rowOptions[i].Any(x => x[j] == CellState.White);
-                    if (!white)
+                    bool whiteRow = rowOptions[i].Any(x => x[j] == CellState.White);
+                    if (!whiteRow)
                     {
                         grid[i][j] = CellState.Black;
+                    }
+
+                    bool blackColumn = columnOptions[i].Any(x => x[j] == CellState.Black);
+                    if (!blackColumn)
+                    {
+                        grid[j][i] = CellState.White;
+                    }
+                    bool whiteColumn = columnOptions[i].Any(x => x[j] == CellState.White);
+                    if (!whiteColumn)
+                    {
+                        grid[j][i] = CellState.Black;
                     }
                 }
             }
