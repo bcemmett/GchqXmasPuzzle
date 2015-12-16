@@ -24,10 +24,12 @@ namespace GchqXmasPuzzle
             var columnConstraints = gridData.GetColumnConstraints();
             List<CellState[]>[] columnOptions = CalculateLineOptions(columnConstraints);
 
-            for (int z = 0; z < 10; z++)
+            bool moreSweepsNeeded = true;
+            while (moreSweepsNeeded)
             {
+                moreSweepsNeeded = false;
+                
                 //First strip out any options which are not compatible with the grid
-
                 for (int i = 0; i < m_Grid.Size; i++)
                 {
                     for (int j = 0; j < m_Grid.Size; j++)
@@ -48,26 +50,35 @@ namespace GchqXmasPuzzle
                 {
                     for (int j = 0; j < m_Grid.Size; j++)
                     {
-                        bool blackRow = rowOptions[i].Any(x => x[j] == CellState.Black);
-                        if (!blackRow)
+                        if (m_Grid.Cells[i][j] == CellState.Unknown)
                         {
-                            m_Grid.Cells[i][j] = CellState.White;
+                            bool blackRow = rowOptions[i].Any(x => x[j] == CellState.Black);
+                            if (!blackRow)
+                            {
+                                m_Grid.Cells[i][j] = CellState.White;
+                                moreSweepsNeeded = true;
+                            }
+                            bool whiteRow = rowOptions[i].Any(x => x[j] == CellState.White);
+                            if (!whiteRow)
+                            {
+                                m_Grid.Cells[i][j] = CellState.Black;
+                                moreSweepsNeeded = true;
+                            }
                         }
-                        bool whiteRow = rowOptions[i].Any(x => x[j] == CellState.White);
-                        if (!whiteRow)
+                        if (m_Grid.Cells[j][i] == CellState.Unknown)
                         {
-                            m_Grid.Cells[i][j] = CellState.Black;
-                        }
-
-                        bool blackColumn = columnOptions[i].Any(x => x[j] == CellState.Black);
-                        if (!blackColumn)
-                        {
-                            m_Grid.Cells[j][i] = CellState.White;
-                        }
-                        bool whiteColumn = columnOptions[i].Any(x => x[j] == CellState.White);
-                        if (!whiteColumn)
-                        {
-                            m_Grid.Cells[j][i] = CellState.Black;
+                            bool blackColumn = columnOptions[i].Any(x => x[j] == CellState.Black);
+                            if (!blackColumn)
+                            {
+                                m_Grid.Cells[j][i] = CellState.White;
+                                moreSweepsNeeded = true;
+                            }
+                            bool whiteColumn = columnOptions[i].Any(x => x[j] == CellState.White);
+                            if (!whiteColumn)
+                            {
+                                m_Grid.Cells[j][i] = CellState.Black;
+                                moreSweepsNeeded = true;
+                            }
                         }
                     }
                 }
