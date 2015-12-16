@@ -1,6 +1,6 @@
 ﻿namespace GchqXmasPuzzle
 {
-    partial class Form1
+    partial class ResultWindow
     {
         /// <summary>
         /// Required designer variable.
@@ -46,14 +46,14 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(483, 20);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
-            // Form1
+            // ResultWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(424, 430);
             this.Controls.Add(this.tableLayoutPanel1);
-            this.Name = "Form1";
-            this.Text = "Form1";
+            this.Name = "ResultWindow";
+            this.Text = "GCHQ Xmas Puzzle 2015";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

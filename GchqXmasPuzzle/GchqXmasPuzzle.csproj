@@ -47,17 +47,17 @@
     <Compile Include="CellState.cs" />
     <Compile Include="Grid.cs" />
     <Compile Include="GridData.cs" />
-    <Compile Include="Form1.cs">
+    <Compile Include="ResultWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="ResultWindow.Designer.cs">
+      <DependentUpon>ResultWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="GridProcessor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="ResultWindow.resx">
+      <DependentUpon>ResultWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

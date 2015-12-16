@@ -3,9 +3,9 @@ using System.Windows.Forms;
 
 namespace GchqXmasPuzzle
 {
-    public partial class Form1 : Form
+    public partial class ResultWindow : Form
     {
-        public Form1()
+        public ResultWindow()
         {
             InitializeComponent();
             var processor = new GridProcessor();
