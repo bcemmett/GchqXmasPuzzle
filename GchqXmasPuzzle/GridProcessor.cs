@@ -90,34 +90,39 @@ namespace GchqXmasPuzzle
         private List<CellState[]>[] CalculateLineOptions(int[][] lineConstraints)
         {
             List<CellState[]>[] lineOptions = new List<CellState[]>[m_Grid.Size];
-            for (int i = 0; i < m_Grid.Size; i++) //for each of the lines
+            for (int i = 0; i < m_Grid.Size; i++) //For each of the lines in the grid
             {
                 lineOptions[i] = new List<CellState[]>();
-                List<int[]> runStartingPositionSets = CalculatePossibleArrangements(lineConstraints[i]);
+                List<int[]> runStartingPositionSets = CalculatePossibleRunStartingPositions(lineConstraints[i]);
                 foreach (var runStartingPositionSet in runStartingPositionSets) //for every option for that line
                 {
-                    CellState[] lineOption = new CellState[m_Grid.Size];
-                    for (int run = 0; run < runStartingPositionSet.Length; run++) //for every run in the option
-                    {
-                        for (int position = runStartingPositionSet[run]; position < runStartingPositionSet[run] + lineConstraints[i][run]; position++)
-                        {
-                            lineOption[position] = CellState.Black;
-                        }
-                        for (int position = 0; position < m_Grid.Size; position++)
-                        {
-                            if (lineOption[position] != CellState.Black)
-                            {
-                                lineOption[position] = CellState.White;
-                            }
-                        }
-                    }
+                    var lineOption = GetPopulatedLineFromRunStartingPositions(runStartingPositionSet, lineConstraints[i]);
                     lineOptions[i].Add(lineOption);
                 }
             }
             return lineOptions;
         }
 
-        private List<int[]> CalculatePossibleArrangements(int[] constraint)
+        private CellState[] GetPopulatedLineFromRunStartingPositions(int[] runStartingPositionSet, int[] lineConstraint)
+        {
+            CellState[] lineOption = new CellState[m_Grid.Size];
+            for (int position = 0; position < m_Grid.Size; position++)
+            {
+                lineOption[position] = CellState.White;
+            }
+
+            for (int run = 0; run < runStartingPositionSet.Length; run++) //For every run in the set
+            {
+                for (int position = runStartingPositionSet[run]; position < runStartingPositionSet[run] + lineConstraint[run]; position++)
+                {
+                    lineOption[position] = CellState.Black;
+                }
+                
+            }
+            return lineOption;
+        }
+
+        private List<int[]> CalculatePossibleRunStartingPositions(int[] constraint)
         {
             List<int[]> acceptableArrangements = new List<int[]>();
             int[] arrangement = new int[constraint.Length];
@@ -162,6 +167,7 @@ namespace GchqXmasPuzzle
                 }
                 if (j == 0 && arrangement[j] == furthestAccpetablePositions[j])
                 {
+                    //The left-most run can't move further to the right, so we're done here
                     moreArrangements = false;
                 }
             }
