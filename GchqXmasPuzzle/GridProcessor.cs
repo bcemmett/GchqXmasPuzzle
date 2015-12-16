@@ -6,6 +6,8 @@ namespace GchqXmasPuzzle
     class GridProcessor
     {
         private Grid m_Grid;
+        private List<CellState[]>[] m_RowOptions;
+        private List<CellState[]>[] m_ColumnOptions;
 
         public Grid Populate()
         {
@@ -19,72 +21,79 @@ namespace GchqXmasPuzzle
             }
 
             var rowConstraints = gridData.GetRowConstraints();
-            List<CellState[]>[] rowOptions = CalculateLineOptions(rowConstraints);
+            m_RowOptions = CalculateLineOptions(rowConstraints);
 
             var columnConstraints = gridData.GetColumnConstraints();
-            List<CellState[]>[] columnOptions = CalculateLineOptions(columnConstraints);
+            m_ColumnOptions = CalculateLineOptions(columnConstraints);
 
             bool moreSweepsNeeded = true;
             while (moreSweepsNeeded)
             {
-                moreSweepsNeeded = false;
-                
-                //First strip out any options which are not compatible with the grid
-                for (int i = 0; i < m_Grid.Size; i++)
+                RemoveLineOptionsIncompatibleWithTheGrid();
+                moreSweepsNeeded = UpdateCellsWithOnlyOnePossibleValue();
+            }
+
+            return m_Grid;
+        }
+
+        private bool UpdateCellsWithOnlyOnePossibleValue()
+        {
+            bool updatedAnyCell = false;
+            for (int i = 0; i < m_Grid.Size; i++)
+            {
+                for (int j = 0; j < m_Grid.Size; j++)
                 {
-                    for (int j = 0; j < m_Grid.Size; j++)
+                    if (m_Grid.Cells[i][j] == CellState.Unknown)
                     {
-                        if (m_Grid.Cells[i][j] != CellState.Unknown)
+                        bool blackRow = m_RowOptions[i].Any(x => x[j] == CellState.Black);
+                        if (!blackRow)
                         {
-                            rowOptions[i] = rowOptions[i].Where(option => m_Grid.Cells[i][j] == option[j]).ToList();
+                            m_Grid.Cells[i][j] = CellState.White;
+                            updatedAnyCell = true;
                         }
-                        if (m_Grid.Cells[j][i] != CellState.Unknown)
+                        bool whiteRow = m_RowOptions[i].Any(x => x[j] == CellState.White);
+                        if (!whiteRow)
                         {
-                            columnOptions[i] = columnOptions[i].Where(option => m_Grid.Cells[j][i] == option[j]).ToList();
+                            m_Grid.Cells[i][j] = CellState.Black;
+                            updatedAnyCell = true;
                         }
                     }
-                }
-
-                //Then look for cells which can only have one value
-                for (int i = 0; i < m_Grid.Size; i++)
-                {
-                    for (int j = 0; j < m_Grid.Size; j++)
+                    if (m_Grid.Cells[j][i] == CellState.Unknown)
                     {
-                        if (m_Grid.Cells[i][j] == CellState.Unknown)
+                        bool blackColumn = m_ColumnOptions[i].Any(x => x[j] == CellState.Black);
+                        if (!blackColumn)
                         {
-                            bool blackRow = rowOptions[i].Any(x => x[j] == CellState.Black);
-                            if (!blackRow)
-                            {
-                                m_Grid.Cells[i][j] = CellState.White;
-                                moreSweepsNeeded = true;
-                            }
-                            bool whiteRow = rowOptions[i].Any(x => x[j] == CellState.White);
-                            if (!whiteRow)
-                            {
-                                m_Grid.Cells[i][j] = CellState.Black;
-                                moreSweepsNeeded = true;
-                            }
+                            m_Grid.Cells[j][i] = CellState.White;
+                            updatedAnyCell = true;
                         }
-                        if (m_Grid.Cells[j][i] == CellState.Unknown)
+                        bool whiteColumn = m_ColumnOptions[i].Any(x => x[j] == CellState.White);
+                        if (!whiteColumn)
                         {
-                            bool blackColumn = columnOptions[i].Any(x => x[j] == CellState.Black);
-                            if (!blackColumn)
-                            {
-                                m_Grid.Cells[j][i] = CellState.White;
-                                moreSweepsNeeded = true;
-                            }
-                            bool whiteColumn = columnOptions[i].Any(x => x[j] == CellState.White);
-                            if (!whiteColumn)
-                            {
-                                m_Grid.Cells[j][i] = CellState.Black;
-                                moreSweepsNeeded = true;
-                            }
+                            m_Grid.Cells[j][i] = CellState.Black;
+                            updatedAnyCell = true;
                         }
                     }
                 }
             }
+            return updatedAnyCell;
+        }
 
-            return m_Grid;
+        private void RemoveLineOptionsIncompatibleWithTheGrid()
+        {
+            for (int i = 0; i < m_Grid.Size; i++)
+            {
+                for (int j = 0; j < m_Grid.Size; j++)
+                {
+                    if (m_Grid.Cells[i][j] != CellState.Unknown)
+                    {
+                        m_RowOptions[i] = m_RowOptions[i].Where(option => m_Grid.Cells[i][j] == option[j]).ToList();
+                    }
+                    if (m_Grid.Cells[j][i] != CellState.Unknown)
+                    {
+                        m_ColumnOptions[i] = m_ColumnOptions[i].Where(option => m_Grid.Cells[j][i] == option[j]).ToList();
+                    }
+                }
+            }
         }
 
         private List<CellState[]>[] CalculateLineOptions(int[][] lineConstraints)
