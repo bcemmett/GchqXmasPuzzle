@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CellState.cs" />
+    <Compile Include="Grid.cs" />
     <Compile Include="GridData.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
@@ -52,9 +53,7 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="GridPrinter.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="GridProcessor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">

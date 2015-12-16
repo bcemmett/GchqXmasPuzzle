@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Drawing;
 using System.Windows.Forms;
 
 namespace GchqXmasPuzzle
@@ -10,163 +8,56 @@ namespace GchqXmasPuzzle
         public Form1()
         {
             InitializeComponent();
-        }
-
-        private void button_Go_Click(object sender, EventArgs e)
-        {
-            var gridData = new GridData();
-            var gridSize = gridData.GetGridSize();
-            var blackCells = gridData.GetBlackCells();
-
-            var rowConstraints = gridData.GetRowConstraints();
-            List<CellState[]>[] rowOptions = CalculateLineOptions(rowConstraints, gridSize);
-
-            var columnConstraints = gridData.GetColumnConstraints();
-            List<CellState[]>[] columnOptions = CalculateLineOptions(columnConstraints, gridSize);
-
-            //Initialise the grid
-            CellState[][] grid = new CellState[gridSize][];
-            for (int i = 0; i < gridSize; i++)
-            {
-                grid[i] = new CellState[gridSize];
-            }
-            foreach (var blackCell in blackCells)
-            {
-                grid[blackCell[0]][blackCell[1]] = CellState.Black;
-            }
-
-            for (int z = 0; z < 10; z ++)
-            {
-                //First strip out any options which are not compatible with the grid
-            
-                for (int i = 0; i < gridSize; i++)
-                {
-                    for (int j = 0; j < gridSize; j++)
-                    {
-                        if (grid[i][j] != CellState.Unknown)
-                        {
-                            rowOptions[i] = rowOptions[i].Where(option => grid[i][j] == option[j]).ToList();
-                        }
-                        if (grid[j][i] != CellState.Unknown)
-                        {
-                            columnOptions[i] = columnOptions[i].Where(option => grid[j][i] == option[j]).ToList();
-                        }
-                    }
-                }
-
-                //Then look for cells which can only have one value
-                for (int i = 0; i < gridSize; i++)
-                {
-                    for (int j = 0; j < gridSize; j++)
-                    {
-                        bool blackRow = rowOptions[i].Any(x => x[j] == CellState.Black);
-                        if (!blackRow)
-                        {
-                            grid[i][j] = CellState.White;
-                        }
-                        bool whiteRow = rowOptions[i].Any(x => x[j] == CellState.White);
-                        if (!whiteRow)
-                        {
-                            grid[i][j] = CellState.Black;
-                        }
-
-                        bool blackColumn = columnOptions[i].Any(x => x[j] == CellState.Black);
-                        if (!blackColumn)
-                        {
-                            grid[j][i] = CellState.White;
-                        }
-                        bool whiteColumn = columnOptions[i].Any(x => x[j] == CellState.White);
-                        if (!whiteColumn)
-                        {
-                            grid[j][i] = CellState.Black;
-                        }
-                    }
-                }
-            }
-
+            var processor = new GridProcessor();
+            var grid = processor.Populate();
             PrintGrid(grid);
         }
 
-        private List<CellState[]>[] CalculateLineOptions(int[][] lineConstraints, int gridSize)
+        private void PrintGrid(Grid grid)
         {
-            List<CellState[]>[] lineOptions = new List<CellState[]>[gridSize];
-            for (int i = 0; i < gridSize; i++) //for each of the lines
+            tableLayoutPanel1.Visible = false;
+            tableLayoutPanel1.SuspendLayout();
+            tableLayoutPanel1.RowStyles.Clear();
+            tableLayoutPanel1.ColumnStyles.Clear();
+            tableLayoutPanel1.RowCount = grid.Size;
+            tableLayoutPanel1.ColumnCount = grid.Size;
+            tableLayoutPanel1.Controls.Clear();
+            tableLayoutPanel1.CellBorderStyle = TableLayoutPanelCellBorderStyle.Single;
+            for (int i = 0; i < grid.Size; i++)
             {
-                lineOptions[i] = new List<CellState[]>();
-                List<int[]> runStartingPositionSets = CalculatePossibleArrangements(lineConstraints[i], gridSize);
-                foreach (var runStartingPositionSet in runStartingPositionSets) //for every option for that line
+                for (int j = 0; j < grid.Size; j++)
                 {
-                    CellState[] lineOption = new CellState[gridSize];
-                    for (int run = 0; run < runStartingPositionSet.Length; run++) //for every run in the option
-                    {
-                        for (int position = runStartingPositionSet[run]; position < runStartingPositionSet[run] + lineConstraints[i][run]; position++)
-                        {
-                            lineOption[position] = CellState.Black;
-                        }
-                        for (int position = 0; position < gridSize; position++)
-                        {
-                            if (lineOption[position] != CellState.Black)
-                            {
-                                lineOption[position] = CellState.White;
-                            }
-                        }
-                    }
-                    lineOptions[i].Add(lineOption);
+                    Panel cell = GetCell(grid.Cells[i][j]);
+                    tableLayoutPanel1.Controls.Add(cell, j, i);
                 }
             }
-            return lineOptions;
+            tableLayoutPanel1.ResumeLayout();
+            tableLayoutPanel1.Visible = true;
         }
 
-        private List<int[]> CalculatePossibleArrangements(int[] constraint, int gridSize)
+        private Panel GetCell(CellState state)
         {
-            List<int[]> acceptableArrangements = new List<int[]>();
-            int[] arrangement = new int[constraint.Length];
-            int[] furthestAccpetablePositions = new int[constraint.Length];
-
-            //Find right-most acceptable positions
-            furthestAccpetablePositions[constraint.Length - 1] = gridSize - constraint[constraint.Length - 1];
-            for (int i = constraint.Length - 2; i >= 0; i--)
+            Panel cell = new Panel
             {
-                furthestAccpetablePositions[i] = furthestAccpetablePositions[i + 1] - constraint[i] - 1;
-            }
-            
-            //Find a first arrangement, as far to the left as possible
-            arrangement[0] = 0;
-            for (int i = 1; i < constraint.Length; i++)
+                Margin = new Padding(0),
+                Size = new Size(15, 15),
+                BackColor = Color.BurlyWood
+            };
+            switch (state)
             {
-                arrangement[i] = arrangement[i - 1] + constraint[i - 1] + 1;
+                case CellState.Black:
+                    cell.BackColor = Color.Black;
+                    break;
+                case CellState.White:
+                    cell.BackColor = Color.White;
+                    break;
             }
-            acceptableArrangements.Add(arrangement);
+            return cell;
+        }
 
-            bool moreArrangements = true;
+        private void Form1_Load(object sender, System.EventArgs e)
+        {
 
-            //Starting from the right hand side, try to move runs to the right
-            int j = constraint.Length - 1;
-            while (moreArrangements)
-            {
-                arrangement = (int[])arrangement.Clone();
-                if (arrangement[j] < furthestAccpetablePositions[j])
-                {
-                    arrangement[j]++;
-                    //Everything to the right of the moved run should move back to its new left-most position
-                    for (int k = j + 1; k < constraint.Length; k++)
-                    {
-                        arrangement[k] = arrangement[k - 1] + constraint[k - 1] + 1;
-                    }
-                    acceptableArrangements.Add(arrangement);
-                    j = constraint.Length - 1;
-                }
-                else
-                {
-                    j--;
-                }
-                if (j == 0 && arrangement[j] == furthestAccpetablePositions[j])
-                {
-                    moreArrangements = false;
-                }
-            }
-
-            return acceptableArrangements;
         }
     }
 }
