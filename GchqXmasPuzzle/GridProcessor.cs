@@ -12,7 +12,7 @@ namespace GchqXmasPuzzle
         public Grid Populate()
         {
             var gridData = new GridData();
-            m_Grid = new Grid(gridData.GetGridSize());
+            m_Grid = new Grid(gridData.GetGridRowCount(), gridData.GetGridColumnCount());
 
             var blackCells = gridData.GetBlackCells();
             foreach (var blackCell in blackCells)
@@ -21,10 +21,10 @@ namespace GchqXmasPuzzle
             }
 
             var rowConstraints = gridData.GetRowConstraints();
-            m_RowOptions = CalculateLineOptions(rowConstraints);
+            m_RowOptions = CalculateLineOptions(rowConstraints, m_Grid.RowCount);
 
             var columnConstraints = gridData.GetColumnConstraints();
-            m_ColumnOptions = CalculateLineOptions(columnConstraints);
+            m_ColumnOptions = CalculateLineOptions(columnConstraints, m_Grid.ColumnCount);
 
             bool moreSweepsNeeded = true;
             while (moreSweepsNeeded)
@@ -39,9 +39,9 @@ namespace GchqXmasPuzzle
         private bool UpdateCellsWithOnlyOnePossibleValue()
         {
             bool updatedAnyCell = false;
-            for (int i = 0; i < m_Grid.Size; i++)
+            for (int i = 0; i < m_Grid.RowCount; i++)
             {
-                for (int j = 0; j < m_Grid.Size; j++)
+                for (int j = 0; j < m_Grid.ColumnCount; j++)
                 {
                     if (m_Grid.Cells[i][j] == CellState.Unknown)
                     {
@@ -80,9 +80,9 @@ namespace GchqXmasPuzzle
 
         private void RemoveLineOptionsIncompatibleWithTheGrid()
         {
-            for (int i = 0; i < m_Grid.Size; i++)
+            for (int i = 0; i < m_Grid.RowCount; i++)
             {
-                for (int j = 0; j < m_Grid.Size; j++)
+                for (int j = 0; j < m_Grid.ColumnCount; j++)
                 {
                     if (m_Grid.Cells[i][j] != CellState.Unknown)
                     {
@@ -96,26 +96,26 @@ namespace GchqXmasPuzzle
             }
         }
 
-        private List<CellState[]>[] CalculateLineOptions(int[][] lineConstraints)
+        private List<CellState[]>[] CalculateLineOptions(int[][] lineConstraints, int lineLength)
         {
-            List<CellState[]>[] lineOptions = new List<CellState[]>[m_Grid.Size];
-            for (int i = 0; i < m_Grid.Size; i++) //For each of the lines in the grid
+            List<CellState[]>[] lineOptions = new List<CellState[]>[lineLength];
+            for (int i = 0; i < lineLength; i++) //For each of the lines in the grid
             {
                 lineOptions[i] = new List<CellState[]>();
-                List<int[]> runStartingPositionSets = CalculatePossibleRunStartingPositions(lineConstraints[i]);
+                List<int[]> runStartingPositionSets = CalculatePossibleRunStartingPositions(lineConstraints[i], lineLength);
                 foreach (var runStartingPositionSet in runStartingPositionSets) //for every option for that line
                 {
-                    var lineOption = GetPopulatedLineFromRunStartingPositions(runStartingPositionSet, lineConstraints[i]);
+                    var lineOption = GetPopulatedLineFromRunStartingPositions(runStartingPositionSet, lineConstraints[i], lineLength);
                     lineOptions[i].Add(lineOption);
                 }
             }
             return lineOptions;
         }
 
-        private CellState[] GetPopulatedLineFromRunStartingPositions(int[] runStartingPositionSet, int[] lineConstraint)
+        private CellState[] GetPopulatedLineFromRunStartingPositions(int[] runStartingPositionSet, int[] lineConstraint, int lineLength)
         {
-            CellState[] lineOption = new CellState[m_Grid.Size];
-            for (int position = 0; position < m_Grid.Size; position++)
+            CellState[] lineOption = new CellState[lineLength];
+            for (int position = 0; position < lineLength; position++)
             {
                 lineOption[position] = CellState.White;
             }
@@ -131,14 +131,14 @@ namespace GchqXmasPuzzle
             return lineOption;
         }
 
-        private List<int[]> CalculatePossibleRunStartingPositions(int[] constraint)
+        private List<int[]> CalculatePossibleRunStartingPositions(int[] constraint, int lineLength)
         {
             List<int[]> acceptableArrangements = new List<int[]>();
             int[] arrangement = new int[constraint.Length];
             int[] furthestAccpetablePositions = new int[constraint.Length];
 
             //Find right-most acceptable positions
-            furthestAccpetablePositions[constraint.Length - 1] = m_Grid.Size - constraint[constraint.Length - 1];
+            furthestAccpetablePositions[constraint.Length - 1] = lineLength - constraint[constraint.Length - 1];
             for (int i = constraint.Length - 2; i >= 0; i--)
             {
                 furthestAccpetablePositions[i] = furthestAccpetablePositions[i + 1] - constraint[i] - 1;

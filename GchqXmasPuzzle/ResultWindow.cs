@@ -19,13 +19,13 @@ namespace GchqXmasPuzzle
             tableLayoutPanel1.SuspendLayout();
             tableLayoutPanel1.RowStyles.Clear();
             tableLayoutPanel1.ColumnStyles.Clear();
-            tableLayoutPanel1.RowCount = grid.Size;
-            tableLayoutPanel1.ColumnCount = grid.Size;
+            tableLayoutPanel1.RowCount = grid.RowCount;
+            tableLayoutPanel1.ColumnCount = grid.RowCount;
             tableLayoutPanel1.Controls.Clear();
             tableLayoutPanel1.CellBorderStyle = TableLayoutPanelCellBorderStyle.Single;
-            for (int i = 0; i < grid.Size; i++)
+            for (int i = 0; i < grid.RowCount; i++)
             {
-                for (int j = 0; j < grid.Size; j++)
+                for (int j = 0; j < grid.RowCount; j++)
                 {
                     Panel cell = GetCell(grid.Cells[i][j]);
                     tableLayoutPanel1.Controls.Add(cell, j, i);

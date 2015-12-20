@@ -4,7 +4,12 @@ namespace GchqXmasPuzzle
 {
     class GridData
     {
-        public int GetGridSize()
+        public int GetGridRowCount()
+        {
+            return 25;
+        }
+
+        public int GetGridColumnCount()
         {
             return 25;
         }
